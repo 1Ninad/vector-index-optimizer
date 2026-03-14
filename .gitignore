@@ -1,0 +1,18 @@
+# Dataset files — too large for git (GBs)
+data/*.fbin
+data/*.bin
+data/*.hdf5
+data/glove/
+data/workload.pkl
+
+# Built HNSW index files — generated at runtime
+data/indexes/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Mac
+.DS_Store

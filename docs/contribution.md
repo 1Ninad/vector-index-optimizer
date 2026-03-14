@@ -16,8 +16,23 @@ Read `architecture.md` fully before starting. The models, formulas, and caching 
 
 **Hands off to Mem 2:** all 5 dataclasses importable and correct, `load_database()` and `load_workload()` returning properly typed objects. Mem 2 cannot write a single line until these exist.
 
-**Datasets (TBD):**
-- Download `` from ann-benchmarks. Place it in `data/`. This file is the database every other member runs against. 
+**Datasets:**
+
+The following files must be present in `data/` before coding starts. Each file becomes one column
+of the multi-vector database. All columns are truncated to 400K rows at load time (GloVe sets the
+floor since it has ~400K words).
+
+| Column ID | File | Format | Dim |
+|---|---|---|---|
+| 0 | `data/glove/glove.6B.50d.txt` | `.txt` | 50 |
+| 1 | `data/glove/glove.6B.100d.txt` | `.txt` | 100 |
+| 2 | `data/glove/glove.6B.200d.txt` | `.txt` | 200 |
+| 3 | `data/sift-128-euclidean.hdf5` | `.hdf5` | 128 |
+| 4 | `data/deep1M_base.fbin` | `.fbin` | 96 |
+| 5 | `data/database_music100.bin` | `.bin` | 100 |
+
+`data/query_music100.bin` and `data/yandex_text_to_image_1M.fbin` are present but not used as
+default columns. Workload is generated synthetically — see `generate_workload()` in loader.
 
 **What to build:**
 

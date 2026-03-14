@@ -33,8 +33,30 @@ This system is an offline optimizer — it runs as a script, not a server. No Fl
 - Database file: one dataset per column, keyed by column ID string. Shape: `(num_items, dim_of_column)`.
 - Workload file: list of query entries, each with `vid`, vectors per column, and probability.
 
-### Required Dataset
--
+### Required Datasets
+
+The system uses a semi-synthetic multi-column database, as described in the paper. Each dataset
+below becomes one column. All columns are truncated to 400K rows at load time (GloVe is the
+limiting dataset at ~400K words).
+
+| Column ID | File | Format | Vector Dim | Source |
+|---|---|---|---|---|
+| 0 | `data/glove/glove.6B.50d.txt` | `.txt` | 50 | GloVe word embeddings (50-dim) |
+| 1 | `data/glove/glove.6B.100d.txt` | `.txt` | 100 | GloVe word embeddings (100-dim) |
+| 2 | `data/glove/glove.6B.200d.txt` | `.txt` | 200 | GloVe word embeddings (200-dim) |
+| 3 | `data/sift-128-euclidean.hdf5` | `.hdf5` | 128 | SIFT image descriptors |
+| 4 | `data/deep1M_base.fbin` | `.fbin` | 96 | Deep image features |
+| 5 | `data/database_music100.bin` | `.bin` | 100 | Music audio embeddings |
+
+`data/yandex_text_to_image_1M.fbin` (200-dim, 1M rows) is available but not used as a default
+column due to RAM constraints on development machines. It can be added as column 6 by updating
+`DATASET_FILES` in `config.py`.
+
+`data/query_music100.bin` is a query file for the Music dataset, not a database column. It is
+not used — workload queries are generated synthetically per the paper.
+
+**Workload generation:** for each query, each column is included with probability p=0.5. A random
+row from that column becomes the query vector. This matches the paper's workload generation rule.
 
 ### Coding conventions
 - Use `dataclasses.dataclass` (not plain dicts or namedtuples) for all model types.

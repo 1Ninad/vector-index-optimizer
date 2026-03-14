@@ -38,5 +38,62 @@ The system takes the following inputs:
 
 **Outputs**
 The system produces:
-- A recommended index configuration (set of indexes to build)  
+- A recommended index configuration (set of indexes to build)
 - Efficient query plans for executing the workload queries
+
+---
+
+## Setup (first time on a new machine)
+
+**1. Clone the repo**
+```bash
+git clone https://github.com/1Ninad/vector-index-optimizer
+cd vector-index-optimizer
+```
+
+**2. Python version**
+
+Python 3.11 or higher required. Check with:
+```bash
+python --version
+```
+
+**3. Install dependencies**
+```bash
+pip install -r requirements.txt
+```
+
+**4. Download datasets**
+
+Download the following files and place them exactly at these paths inside the project:
+
+```
+data/glove/glove.6B.50d.txt
+data/glove/glove.6B.100d.txt
+data/glove/glove.6B.200d.txt
+data/sift-128-euclidean.hdf5
+data/deep1M_base.fbin
+data/database_music100.bin
+```
+
+Sources:
+- GloVe: https://downloads.cs.stanford.edu/nlp/data/glove.6B.zip — download `glove.6B.zip`, extract into `data/glove/`, delete glove.6B.300d.txt
+- SIFT: http://ann-benchmarks.com/sift-128-euclidean.hdf5 — download
+- Deep1M: run: 
+curl -L "https://storage.yandexcloud.net/yandex-research/ann-datasets/DEEP/base.1B.fbin" \
+  --range 0-383999999 \
+  -o data/deep1M_base.fbin
+- Database Music100: https://disk.yandex.com/d/F85at7Df685hGA
+
+
+**5. Verify setup**
+```bash
+python -m pytest tests/ -v
+```
+
+All tests must pass. This also generates `data/workload.pkl` on first run (takes ~2 min).
+
+**7. Run the pipeline**
+```bash
+python main.py
+```
