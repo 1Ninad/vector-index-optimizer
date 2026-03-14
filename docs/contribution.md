@@ -1,19 +1,28 @@
 # Contribution — Work Distribution
 
-4 developers. Work split by implementation complexity, not file count. Each developer owns their components end-to-end: design the internals, write the code, make sure it connects correctly to the interfaces described in `architecture.md`.
+4 members. Sequential development — each member starts only after the previous one is done and has handed off working code.
+
+**Order:** Ninad → Member 2 → Member 3 → Member 4
 
 Read `architecture.md` fully before starting. The models, formulas, and caching rules in there are binding — not suggestions.
 
 ---
 
-## Developer 1 — Data Layer + Config + Pipeline Wiring
+## Ninad — Data Layer + Config + Pipeline Wiring
 
 **Owns:** `src/data/`, `config.py`, `main.py`
+
+**Receives:** nothing — this is the starting point.
+
+**Hands off to Mem 2:** all 5 dataclasses importable and correct, `load_database()` and `load_workload()` returning properly typed objects. Mem 2 cannot write a single line until these exist.
+
+**Datasets (TBD):**
+- Download `` from ann-benchmarks. Place it in `data/`. This file is the database every other member runs against. 
 
 **What to build:**
 
 `src/data/` — Data models and disk I/O.
-- Define all 5 dataclasses: `Index`, `Query`, `Configuration`, `WorkloadEntry`, `QueryPlan`. Fields and types are specified exactly in the "Data Models" section of `architecture.md`. Get these right — every other developer depends on them.
+- Define all 5 dataclasses: `Index`, `Query`, `Configuration`, `WorkloadEntry`, `QueryPlan`. Fields and types are specified exactly in the "Data Models" section of `architecture.md`. Get these right — every other member depends on them.
 - Write the loader: reads the HDF5 database file (one dataset per column, shape `num_items × col_dim`), reads the workload file, returns typed objects. Use `h5py`.
 
 `config.py` — All constants in one place.
@@ -28,16 +37,17 @@ Read `architecture.md` fully before starting. The models, formulas, and caching 
 
 **Why this scope:** the models are the foundation — if they're wrong, everything else breaks. The pipeline wiring and query execution add real complexity. Together this is a full workload.
 
-**Interfaces you expose to others:**
-- All 5 dataclasses (used by every developer)
-- `load_database(path) -> dict[int, ndarray]` — column_id → item vectors
-- `load_workload(path) -> list[WorkloadEntry]`
+**Note:** `main.py` is partially written now (loader call + config) and completed last after Mem 4 hands off — Mem 1 comes back at the end to wire the full pipeline together.
 
 ---
 
-## Developer 2 — Estimator Training + Cost & Recall Estimators
+## Member 2 — Estimator Training + Cost & Recall Estimators
 
 **Owns:** `src/estimators/`
+
+**Receives from Mem 1:** all 5 dataclasses (`Index`, `Query`, `WorkloadEntry`, etc.), `load_database()`, `load_workload()`, `config.py` constants.
+
+**Hands off to Mem 3:** `CostEstimator` and `RecallEstimator` objects with working `estimate_num_dist()` and `estimate_recall()` methods. Also `train()` function. Mem 3 cannot implement the query planner without these.
 
 **What to build:**
 
@@ -63,16 +73,15 @@ Recall Estimator:
 
 **Why this scope:** building sample indexes, running queries, brute-forcing ground truth, and fitting two statistical models with the multi-column averaging logic is substantial work that requires careful implementation.
 
-**Interfaces you expose to others:**
-- `CostEstimator` with `estimate_num_dist(index, ek) -> float`
-- `RecallEstimator` with `estimate_recall(index, ek) -> float`
-- `train(database, workload) -> (CostEstimator, RecallEstimator)` — called once by `main.py`
-
 ---
 
-## Developer 3 — Query Planner (Algorithm 1 + Algorithm 2)
+## Member 3 — Query Planner (Algorithm 1 + Algorithm 2)
 
 **Owns:** `src/planner/`
+
+**Receives from Mem 2:** `CostEstimator`, `RecallEstimator`, `train()`. Also inherits Mem 1's dataclasses and `config.py`.
+
+**Hands off to Mem 4:** `plan_query(query, config, cost_estimator, recall_estimator, ground_truth) -> QueryPlan` — fully working. Mem 4's beam search calls this for every (query, configuration) pair evaluated.
 
 **What to build:**
 
@@ -104,15 +113,15 @@ All formulas are in "Component 2: Query Planner" in `architecture.md`.
 
 **Why this scope:** two distinct algorithms, one of which is a bitmask DP with a non-obvious recurrence and a custom helper function. This is the most algorithmically dense part of the system.
 
-**Interfaces you expose to others:**
-- `plan_query(query, config, cost_estimator, recall_estimator, ground_truth) -> QueryPlan`
-- This is called by the beam search for every (query, configuration) pair.
-
 ---
 
-## Developer 4 — Configuration Searcher + Storage Estimator + Index Builder
+## Member 4 — Configuration Searcher + Storage Estimator + Index Builder
 
 **Owns:** `src/searcher/`, `src/storage/`, `src/index_builder/`
+
+**Receives from Mem 3:** `plan_query()` function. Also inherits Mem 1's dataclasses, loader, config, and Mem 2's estimators.
+
+**Hands off to Mem 1 (to complete `main.py`):** `generate_candidates()`, `beam_search()` returning X*, `build_indexes()`, `query_index()` — all working. Mem 1 then wires these into the full pipeline.
 
 **What to build:**
 
@@ -139,26 +148,3 @@ Index Builder:
 All caching rules, pruning conditions, and loop structure are in "Component 3" of `architecture.md`.
 
 **Why this scope:** candidate generation + beam search with two caches + storage check + full index build is a large but well-defined scope. The storage estimator is trivial but logically belongs here since it's called directly by the beam search.
-
-**Interfaces you expose to others:**
-- `generate_candidates(workload, col_dims) -> (candidate_pool, seed_pool)`
-- `beam_search(workload, candidate_pool, seed_pool, planner_fn, storage_fn, estimators) -> Configuration`
-- `build_indexes(config, database) -> None` (writes to disk)
-- `query_index(index_path, query_vector, ek) -> (item_ids, scores)`
-
----
-
-## Interface Summary
-
-These are the boundaries between developers. Agree on these before writing any code.
-
-| From | To | What is passed |
-|---|---|---|
-| Dev 1 (`data`) | Everyone | `Index`, `Query`, `Configuration`, `WorkloadEntry`, `QueryPlan` dataclasses |
-| Dev 1 (`loader`) | Dev 2, Dev 4 | `load_database()`, `load_workload()` |
-| Dev 2 (`estimators`) | Dev 3, Dev 4 | `CostEstimator`, `RecallEstimator` objects |
-| Dev 3 (`planner`) | Dev 4 | `plan_query(query, config, cost_est, recall_est, gt) -> QueryPlan` |
-| Dev 4 (`searcher`) | Dev 1 (`main`) | Best `Configuration` X* |
-| Dev 4 (`index_builder`) | Dev 1 (`main`) | Built index files on disk; `query_index()` function |
-
-**Dev 1 writes the models first. All others wait on that before writing any code.**

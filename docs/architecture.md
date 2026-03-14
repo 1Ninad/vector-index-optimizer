@@ -8,7 +8,7 @@ MINT (Multi-Vector Index Tuning) solves one problem: your database has rows of i
 
 ## Tech Stack
 
-Every developer on the team uses these exact tools and libraries. No substitutions.
+Every member on the team uses these exact tools and libraries. No substitutions.
 
 ### Language
 - **Python 3.11+**
@@ -32,6 +32,9 @@ This system is an offline optimizer — it runs as a script, not a server. No Fl
 - **HDF5 (`.h5`)** via `h5py` — standard format for large vector datasets (same format used by ann-benchmarks, which is the benchmark suite this system is evaluated against).
 - Database file: one dataset per column, keyed by column ID string. Shape: `(num_items, dim_of_column)`.
 - Workload file: list of query entries, each with `vid`, vectors per column, and probability.
+
+### Required Dataset
+-
 
 ### Coding conventions
 - Use `dataclasses.dataclass` (not plain dicts or namedtuples) for all model types.
