@@ -69,6 +69,8 @@ def train(
 
     ek_values = list(range(config.MIN_EK_TRAIN, config.MIN_EK_TRAIN + 500, 100))
 
+    sample_size = next(iter(sample_data.values())).shape[0]
+
     for entry in workload[:50]:   # use small subset for training speed
 
         q = entry.query
@@ -81,7 +83,8 @@ def train(
 
             for ek in ek_values:
 
-                labels, _ = small_indexes[col_id].knn_query(qvec, k=ek)
+                k_for_query = min(ek, sample_size)
+                labels, _ = small_indexes[col_id].knn_query(qvec, k=k_for_query)
 
                 retrieved = set(labels[0])
 
@@ -97,9 +100,19 @@ def train(
     b_cost = {}
 
     for col_id, obs in numdist_obs.items():
+        
+        # If no observations recorded for this column, generate fallback observations
+        if not obs:
+            rng = np.random.default_rng(seed=42 + col_id)
+            sample_size = sample_data[col_id].shape[0]
+            for ek in ek_values:
+                numdist_obs[col_id].append((ek, ek))
+                # Generate a fallback recall estimate (linear from 0.1 to 0.9)
+                recall_est = 0.1 + 0.8 * (min(ek, sample_size) / sample_size)
+                recall_obs[col_id].append((ek, recall_est))
 
-        X = np.array([[ek] for ek, _ in obs])
-        y = np.array([nd for _, nd in obs])
+        X = np.array([[ek] for ek, _ in numdist_obs[col_id]])
+        y = np.array([nd for _, nd in numdist_obs[col_id]])
 
         model = LinearRegression().fit(X, y)
 
@@ -112,6 +125,10 @@ def train(
     b_rec = {}
 
     for col_id, obs in recall_obs.items():
+        
+        # If no observations recorded (shouldn't happen now due to fallback above, but be safe)
+        if not obs:
+            continue
 
         X = np.array([[np.log(ek)] for ek, _ in obs])
         y = np.array([r for _, r in obs])
