@@ -97,11 +97,6 @@ def evaluate_configuration(
     normalized = _normalize_configuration(configuration)
     _, storage_valid = estimate_storage(normalized, theta_storage)
 
-    print("----")
-    print(f"Evaluating config with {len(normalized.indexes)} indexes")
-    print(f"Config vids: {[sorted(idx.vid) for idx in normalized.indexes]}")
-    print(f"Storage valid: {storage_valid}")
-
     if not storage_valid:
         return float("inf"), False
 
@@ -133,15 +128,11 @@ def evaluate_configuration(
             )
             plan_cache[cache_key] = plan
 
-        print(f"Plan recall: {plan.recall}, required: {theta_recall}")
-        print(f"Plan cost: {plan.cost}")
-
         if plan.recall + 1e-9 < theta_recall:
             return float("inf"), False
 
         total_weighted_cost += float(entry.probability) * float(plan.cost)
 
-    print(f"✅ Valid config, total weighted cost: {total_weighted_cost}")
     return total_weighted_cost, True
 
 

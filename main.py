@@ -13,7 +13,7 @@ def main():
     # Step 2: Load or generate the synthetic workload.
     # 1000 queries, each targeting a random subset of columns. Saved to data/workload.pkl.
     workload = load_workload(config.WORKLOAD_PATH, col_data)
-    workload = workload[:10]
+    workload = workload[:1]
     print(f"Workload: {len(workload)} queries")
 
     # Step 3: Train estimators.
@@ -41,7 +41,7 @@ def main():
         cost_estimator=cost_est,
         recall_estimator=recall_est,
         sample_data=sample_data,
-        theta_storage=20,
+        theta_storage=6,
         theta_recall=config.THETA_RECALL_LARGE,
     )
     print(f"Best configuration has {len(x_star.indexes)} indexes:")

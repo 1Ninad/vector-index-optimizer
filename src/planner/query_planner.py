@@ -10,6 +10,7 @@ Algorithm 2: Dynamic programming when |X| > 3
 
 import itertools
 import math
+import time
 from typing import Dict, Set, Tuple, List
 import numpy as np
 import hnswlib
@@ -18,6 +19,8 @@ import config
 from src.data.models import Index, Query, QueryPlan
 from src.estimators.cost_estimator import CostEstimator
 from src.estimators.recall_estimator import RecallEstimator
+
+_ACTIVE_RETRIEVAL_CACHE: Dict[Tuple[frozenset, int], Set[int]] | None = None
 
 
 def _build_sample_index(query: Query, index: Index, sample_data: Dict[int, np.ndarray]) -> hnswlib.Index:
@@ -51,7 +54,7 @@ def _retrieve_items_from_index(query: Query, index: Index, small_index: hnswlib.
     query_vec = query_vec / (np.linalg.norm(query_vec) + 1e-10)
     
     try:
-        labels, _ = small_index.knn_query(query_vec, k=min(ek, small_index.get_ids_list().size()))
+        labels, _ = small_index.knn_query(query_vec, k=min(ek, len(small_index.get_ids_list())))
         return set(labels[0])
     except:
         return set()
@@ -64,7 +67,7 @@ def _find_gt_ranks(query: Query, index: Index, small_index: hnswlib.Index, gt: S
     query_vec = query_vec / (np.linalg.norm(query_vec) + 1e-10)
     
     try:
-        labels, _ = small_index.knn_query(query_vec, k=min(sample_size, small_index.get_ids_list().size()))
+        labels, _ = small_index.knn_query(query_vec, k=min(sample_size, len(small_index.get_ids_list())))
         sorted_items = labels[0]
     except:
         sorted_items = np.array([])
@@ -119,7 +122,13 @@ def _compute_plan_cost_and_recall(
             cost += index_cost
             
             if index in small_indexes:
-                retrieved_items = _retrieve_items_from_index(query, index, small_indexes[index], ek)
+                cache_key = (index.vid, ek)
+                if _ACTIVE_RETRIEVAL_CACHE is not None and cache_key in _ACTIVE_RETRIEVAL_CACHE:
+                    retrieved_items = _ACTIVE_RETRIEVAL_CACHE[cache_key]
+                else:
+                    retrieved_items = _retrieve_items_from_index(query, index, small_indexes[index], ek)
+                    if _ACTIVE_RETRIEVAL_CACHE is not None:
+                        _ACTIVE_RETRIEVAL_CACHE[cache_key] = retrieved_items
                 retrieved_union.update(retrieved_items)
     
     total_ek = sum(ek for ek in ek_map.values() if ek > 0)
@@ -142,6 +151,7 @@ def _algorithm_1(
     sample_size: int
 ) -> QueryPlan:
     """Algorithm 1: Exhaustive search for |X| <= 3."""
+    start_time = time.perf_counter()
     if not indexes:
         return QueryPlan(query=query, ek_map={}, cost=0.0, recall=0.0)
     
@@ -150,6 +160,8 @@ def _algorithm_1(
         relevant_ek_per_index[index] = _compute_relevant_ek_values(
             index, query, small_indexes[index], gt, sample_size
         )
+    ek_counts = [len(relevant_ek_per_index[index]) for index in indexes]
+    estimated_combinations = math.prod(ek_counts)
     
     best_plan = None
     best_cost = float('inf')
@@ -205,6 +217,13 @@ def _algorithm_1(
             query, ek_map, small_indexes, cost_estimator, recall_estimator, gt
         )
         best_plan = QueryPlan(query=query, ek_map=ek_map, cost=cost, recall=recall)
+
+    elapsed = time.perf_counter() - start_time
+    print(
+        f"[Algorithm1] ek_counts={ek_counts}, "
+        f"est_combinations={estimated_combinations}, "
+        f"elapsed={elapsed:.3f}s"
+    )
     
     return best_plan
 
@@ -344,13 +363,19 @@ def plan_query(
     
     sample_size = len(sample_data[next(iter(sample_data.keys()))])
     
-    if len(relevant_indexes) <= 3:
-        return _algorithm_1(
-            query, relevant_indexes, cost_estimator, recall_estimator,
-            small_indexes, gt, theta_recall, sample_size
-        )
-    else:
-        return _algorithm_2(
-            query, relevant_indexes, cost_estimator, recall_estimator,
-            small_indexes, gt, theta_recall, sample_size
-        )
+    global _ACTIVE_RETRIEVAL_CACHE
+    previous_cache = _ACTIVE_RETRIEVAL_CACHE
+    _ACTIVE_RETRIEVAL_CACHE = {}
+    try:
+        if len(relevant_indexes) <= 3:
+            return _algorithm_1(
+                query, relevant_indexes, cost_estimator, recall_estimator,
+                small_indexes, gt, theta_recall, sample_size
+            )
+        else:
+            return _algorithm_2(
+                query, relevant_indexes, cost_estimator, recall_estimator,
+                small_indexes, gt, theta_recall, sample_size
+            )
+    finally:
+        _ACTIVE_RETRIEVAL_CACHE = previous_cache

@@ -171,8 +171,15 @@ class TestQueryPlanner:
         col_data, workload = small_data
         cost_est, recall_est, sample_size = estimators
         
-        entry = workload[0]
-        query = entry.query
+        query = Query(
+            vid=frozenset({0, 1}),
+            vectors={
+                0: np.random.randn(50).astype(np.float32),
+                1: np.random.randn(100).astype(np.float32),
+            },
+            k=20,
+            dim=150,
+        )
         # Query on {0, 1}, index on {2}
         idx = Index(frozenset({2}), 75)
         
