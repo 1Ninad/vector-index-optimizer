@@ -14,7 +14,7 @@ def _sample_database(col_data: Dict[int, np.ndarray]):
     rng = np.random.default_rng(seed=42)
 
     n = next(iter(col_data.values())).shape[0]
-    sample_size = int(n * config.SAMPLE_FRAC)
+    sample_size = max(1, int(n * config.SAMPLE_FRAC))
 
     idx = rng.choice(n, size=sample_size, replace=False)
 

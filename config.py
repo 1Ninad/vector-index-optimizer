@@ -14,7 +14,7 @@ IM: float = 0.05
 K_PRIME: int = 5
 
 # Beam width: how many configurations to keep per beam search iteration.
-BEAM_WIDTH: int = 5
+BEAM_WIDTH: int = 2
 
 # Fraction of database rows used for estimator training (1% sample).
 SAMPLE_FRAC: float = 0.01
