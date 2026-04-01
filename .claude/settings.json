@@ -1,7 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(ls /Users/ninadkale/Developer/VIT/EDI6/vector-index-optimizer/data/*.bin)"
-    ]
-  }
-}
