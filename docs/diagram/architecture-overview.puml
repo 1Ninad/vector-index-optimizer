@@ -1,0 +1,92 @@
+@startuml
+left to right direction
+skinparam backgroundColor #F8FAFC
+skinparam shadowing false
+skinparam defaultFontName Helvetica
+skinparam dpi 220
+skinparam ArrowColor #2563EB
+skinparam ArrowThickness 1.2
+skinparam ArrowFontColor #1E3A8A
+skinparam packageStyle rectangle
+skinparam linetype ortho
+skinparam ranksep 85
+skinparam nodesep 90
+skinparam wrapWidth 180
+skinparam maxMessageSize 120
+scale max 1000 width
+
+title Vector Index Optimizer - Architecture Overview
+
+skinparam rectangle {
+  BackgroundColor #EEF2FF
+  BorderColor #334155
+  FontColor #0F172A
+  RoundCorner 10
+}
+
+skinparam database {
+  BackgroundColor #E0F2FE
+  BorderColor #0369A1
+  FontColor #0C4A6E
+}
+
+skinparam package {
+  BackgroundColor #F1F5F9
+  BorderColor #64748B
+  FontColor #0F172A
+}
+
+rectangle "Raw Vector Datasets" as datasets
+rectangle "Workload\n(loaded or generated)" as workload
+rectangle "System Parameters\n(recall, storage, search limits)" as params
+
+rectangle "Search Request" as searchReq
+rectangle "Search Results" as searchRes
+
+package "Vector Index Optimizer (MINT)" as system {
+  rectangle "Data Loader\n(normalize columns, align rows)" as loader
+
+  rectangle "Estimator Training\n(sample data, train cost/recall models)" as trainer
+
+  rectangle "Candidate & Seed\nGeneration" as candidate
+  rectangle "Beam Search\nConfiguration Optimizer" as beam
+  rectangle "Query Planner\n(per query planning)" as planner
+  rectangle "Storage Check\n(storage constraint)" as storage
+
+  rectangle "Best Configuration" as best
+  rectangle "Index Builder\n(build full ANN indexes)" as builder
+  database "Persisted ANN Indexes" as idxStore
+
+  rectangle "Query Execution\n(scan selected indexes, rerank, top-k)" as serving
+}
+
+' stabilize spacing to avoid overlap in optimizer section
+candidate -[hidden]down- beam
+beam -[hidden]down- planner
+planner -[hidden]down- storage
+
+datasets --> loader
+workload --> trainer
+workload --> candidate
+params --> beam
+params --> planner
+
+loader --> trainer
+trainer --> planner : model inputs
+candidate --> beam
+beam --> planner : evaluate
+beam --> storage : check
+planner --> beam : plan score
+storage --> beam : pass/fail
+
+beam --> best
+loader --> builder
+best --> builder
+builder --> idxStore
+
+searchReq --> serving
+idxStore --> serving
+best --> serving : chosen index set
+serving --> searchRes
+
+@enduml
