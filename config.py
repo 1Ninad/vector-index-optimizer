@@ -14,7 +14,7 @@ IM: float = 0.05
 K_PRIME: int = 5
 
 # Beam width: how many configurations to keep per beam search iteration.
-BEAM_WIDTH: int = 2
+BEAM_WIDTH: int = 5
 
 # Fraction of database rows used for estimator training (1% sample).
 SAMPLE_FRAC: float = 0.01
@@ -28,15 +28,23 @@ HNSW_MAX_DEGREE: int = 16
 # Distance metric for all ANN indexes.
 DISTANCE: str = "cosine"
 
-# Top-k: how many results each query returns. recall@100 is the paper's evaluation metric.
-K: int = 100
+# Top-k: how many results each query returns.
+# Set to 10 for practical evaluation speed; the paper uses 100 on large GPU machines.
+# With K=10, each query has 10 ground-truth items → at most 11 relevant ek values per index
+# → Algorithm1 tries at most 11^2=121 combinations (vs 10201 at K=100).
+K: int = 10
 
 # Recall thresholds: 90% for large datasets (>= 100K rows), 97% for small ones.
 THETA_RECALL_LARGE: float = 0.90
 THETA_RECALL_SMALL: float = 0.97
 
 # Workload generation: each column is included in a query with this probability.
-WORKLOAD_P: float = 0.5
+WORKLOAD_P: float = 0.3
+
+# Maximum number of columns per query. Capped at DI+1 so single-column indexes are always
+# a valid starting point for the beam search (any query <= DI+1 cols can be served by
+# a 1-col index because min_size = max(0, |vid| - DI) <= 1).
+MAX_QUERY_COLS: int = DI + 1
 
 # Number of synthetic workload queries to generate.
 NUM_QUERIES: int = 1000

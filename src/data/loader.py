@@ -100,6 +100,11 @@ def generate_workload(
             # every query must target at least one column
             included = [int(rng.choice(col_ids))]
 
+        # cap at MAX_QUERY_COLS so all queries stay within DI+1 columns
+        # this ensures single-column indexes are always relevant (min_size = max(0, |vid|-DI) <= 1)
+        if len(included) > config.MAX_QUERY_COLS:
+            included = list(rng.choice(included, size=config.MAX_QUERY_COLS, replace=False))
+
         vid = frozenset(included)
         dim = sum(col_data[c].shape[1] for c in included)
 

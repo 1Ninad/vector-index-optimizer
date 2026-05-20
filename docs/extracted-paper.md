@@ -1,4 +1,4 @@
-# MINT: Implementation Reference
+# MINT: Implementation Reference Paper
 
 ---
 
