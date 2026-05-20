@@ -1,0 +1,7 @@
+timestamp,dataset,sample_size,query_type,num_col_targeted,n_queries,percol_lat_ms,mint_lat_ms,speedup,percol_recall,mint_recall,percol_recall_pass,mint_recall_pass
+2026-05-20T05:49:05Z,"MINT-paper-datasets (GloVe-50d, GloVe-100d, GloVe-200d, SIFT-128, Deep1M-96, Music100-100d)",20000,1-col,1,14,0.6237,2.6486,0.235,0.9693,0.97,FAIL (need 97%),PASS
+2026-05-20T05:49:05Z,"MINT-paper-datasets (GloVe-50d, GloVe-100d, GloVe-200d, SIFT-128, Deep1M-96, Music100-100d)",20000,2-col,2,39,1.6574,7.8225,0.212,0.3959,0.9508,FAIL (need 97%),FAIL (need 97%)
+2026-05-20T05:49:05Z,"MINT-paper-datasets (GloVe-50d, GloVe-100d, GloVe-200d, SIFT-128, Deep1M-96, Music100-100d)",20000,3-col,3,45,3.5866,7.9937,0.449,0.2529,0.9684,FAIL (need 97%),FAIL (need 97%)
+2026-05-20T05:49:05Z,"MINT-paper-datasets (GloVe-50d, GloVe-100d, GloVe-200d, SIFT-128, Deep1M-96, Music100-100d)",20000,4-col,4,28,4.1785,12.3773,0.338,0.1989,0.9779,FAIL (need 97%),PASS
+2026-05-20T05:49:05Z,"MINT-paper-datasets (GloVe-50d, GloVe-100d, GloVe-200d, SIFT-128, Deep1M-96, Music100-100d)",20000,5-col,5,11,4.0355,9.6601,0.418,0.1609,0.9755,FAIL (need 97%),PASS
+2026-05-20T05:49:05Z,"MINT-paper-datasets (GloVe-50d, GloVe-100d, GloVe-200d, SIFT-128, Deep1M-96, Music100-100d)",20000,6-col,6,3,4.0997,7.6308,0.537,0.1333,0.9933,FAIL (need 97%),PASS

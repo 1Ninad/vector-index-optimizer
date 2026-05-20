@@ -1,0 +1,622 @@
+{
+  "meta": {
+    "timestamp": "2026-05-20T05:49:05Z",
+    "dataset": "MINT-paper-datasets (GloVe-50d, GloVe-100d, GloVe-200d, SIFT-128, Deep1M-96, Music100-100d)",
+    "full_rows_per_col": 400000,
+    "sample_frac": 0.05,
+    "sample_size_per_col": 20000,
+    "total_generated_queries": 150,
+    "warmup_queries": 10,
+    "measured_queries": 140,
+    "bench_k": 100,
+    "bench_p": 0.5,
+    "percol_ek": 100,
+    "recall_threshold_large": 0.9,
+    "recall_threshold_small": 0.97,
+    "applied_recall_threshold": 0.97
+  },
+  "mint_configuration": [
+    {
+      "vid": [
+        0
+      ],
+      "dim": 50,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        1
+      ],
+      "dim": 100,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        2
+      ],
+      "dim": 200,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        3
+      ],
+      "dim": 128,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        4
+      ],
+      "dim": 96,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        5
+      ],
+      "dim": 100,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        0,
+        1
+      ],
+      "dim": 150,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        0,
+        2
+      ],
+      "dim": 250,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        0,
+        3
+      ],
+      "dim": 178,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        0,
+        4
+      ],
+      "dim": 146,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        0,
+        5
+      ],
+      "dim": 150,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        1,
+        2
+      ],
+      "dim": 300,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        1,
+        3
+      ],
+      "dim": 228,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        1,
+        4
+      ],
+      "dim": 196,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        1,
+        5
+      ],
+      "dim": 200,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        2,
+        3
+      ],
+      "dim": 328,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        2,
+        4
+      ],
+      "dim": 296,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        2,
+        5
+      ],
+      "dim": 300,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        3,
+        4
+      ],
+      "dim": 224,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        4,
+        5
+      ],
+      "dim": 196,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        0,
+        1,
+        2
+      ],
+      "dim": 350,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        0,
+        1,
+        3
+      ],
+      "dim": 278,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        0,
+        1,
+        5
+      ],
+      "dim": 250,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        0,
+        2,
+        3
+      ],
+      "dim": 378,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        0,
+        2,
+        4
+      ],
+      "dim": 346,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        0,
+        2,
+        5
+      ],
+      "dim": 350,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        0,
+        3,
+        4
+      ],
+      "dim": 274,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        0,
+        4,
+        5
+      ],
+      "dim": 246,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        1,
+        2,
+        3
+      ],
+      "dim": 428,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        1,
+        2,
+        4
+      ],
+      "dim": 396,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        1,
+        2,
+        5
+      ],
+      "dim": 400,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        1,
+        3,
+        4
+      ],
+      "dim": 324,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        1,
+        3,
+        5
+      ],
+      "dim": 328,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        1,
+        4,
+        5
+      ],
+      "dim": 296,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        2,
+        3,
+        4
+      ],
+      "dim": 424,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        2,
+        3,
+        5
+      ],
+      "dim": 428,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        2,
+        4,
+        5
+      ],
+      "dim": 396,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        3,
+        4,
+        5
+      ],
+      "dim": 324,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        0,
+        1,
+        2,
+        4
+      ],
+      "dim": 446,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        0,
+        1,
+        3,
+        4
+      ],
+      "dim": 374,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        0,
+        1,
+        3,
+        5
+      ],
+      "dim": 378,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        0,
+        1,
+        4,
+        5
+      ],
+      "dim": 346,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        0,
+        2,
+        3,
+        4
+      ],
+      "dim": 474,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        0,
+        2,
+        3,
+        5
+      ],
+      "dim": 478,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        0,
+        2,
+        4,
+        5
+      ],
+      "dim": 446,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        0,
+        3,
+        4,
+        5
+      ],
+      "dim": 374,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "dim": 524,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        1,
+        2,
+        3,
+        5
+      ],
+      "dim": 528,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        1,
+        2,
+        4,
+        5
+      ],
+      "dim": 496,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        1,
+        3,
+        4,
+        5
+      ],
+      "dim": 424,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        2,
+        3,
+        4,
+        5
+      ],
+      "dim": 524,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "dim": 574,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        0,
+        1,
+        2,
+        3,
+        5
+      ],
+      "dim": 578,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        0,
+        1,
+        2,
+        4,
+        5
+      ],
+      "dim": 546,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        0,
+        2,
+        3,
+        4,
+        5
+      ],
+      "dim": 574,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "dim": 624,
+      "role": "beam_search"
+    },
+    {
+      "vid": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5
+      ],
+      "dim": 674,
+      "role": "beam_search"
+    }
+  ],
+  "query_type_breakdown": {
+    "1": 15,
+    "2": 41,
+    "3": 51,
+    "4": 28,
+    "5": 12,
+    "6": 3
+  },
+  "results_by_query_type": [
+    {
+      "query_type": "1-col",
+      "num_col_targeted": 1,
+      "n_queries": 14,
+      "percol_lat_ms": 0.6237,
+      "mint_lat_ms": 2.6486,
+      "speedup": 0.235,
+      "percol_recall": 0.9693,
+      "mint_recall": 0.97,
+      "percol_recall_pass": "FAIL (need 97%)",
+      "mint_recall_pass": "PASS"
+    },
+    {
+      "query_type": "2-col",
+      "num_col_targeted": 2,
+      "n_queries": 39,
+      "percol_lat_ms": 1.6574,
+      "mint_lat_ms": 7.8225,
+      "speedup": 0.212,
+      "percol_recall": 0.3959,
+      "mint_recall": 0.9508,
+      "percol_recall_pass": "FAIL (need 97%)",
+      "mint_recall_pass": "FAIL (need 97%)"
+    },
+    {
+      "query_type": "3-col",
+      "num_col_targeted": 3,
+      "n_queries": 45,
+      "percol_lat_ms": 3.5866,
+      "mint_lat_ms": 7.9937,
+      "speedup": 0.449,
+      "percol_recall": 0.2529,
+      "mint_recall": 0.9684,
+      "percol_recall_pass": "FAIL (need 97%)",
+      "mint_recall_pass": "FAIL (need 97%)"
+    },
+    {
+      "query_type": "4-col",
+      "num_col_targeted": 4,
+      "n_queries": 28,
+      "percol_lat_ms": 4.1785,
+      "mint_lat_ms": 12.3773,
+      "speedup": 0.338,
+      "percol_recall": 0.1989,
+      "mint_recall": 0.9779,
+      "percol_recall_pass": "FAIL (need 97%)",
+      "mint_recall_pass": "PASS"
+    },
+    {
+      "query_type": "5-col",
+      "num_col_targeted": 5,
+      "n_queries": 11,
+      "percol_lat_ms": 4.0355,
+      "mint_lat_ms": 9.6601,
+      "speedup": 0.418,
+      "percol_recall": 0.1609,
+      "mint_recall": 0.9755,
+      "percol_recall_pass": "FAIL (need 97%)",
+      "mint_recall_pass": "PASS"
+    },
+    {
+      "query_type": "6-col",
+      "num_col_targeted": 6,
+      "n_queries": 3,
+      "percol_lat_ms": 4.0997,
+      "mint_lat_ms": 7.6308,
+      "speedup": 0.537,
+      "percol_recall": 0.1333,
+      "mint_recall": 0.9933,
+      "percol_recall_pass": "FAIL (need 97%)",
+      "mint_recall_pass": "PASS"
+    }
+  ],
+  "overall": {
+    "percol_avg_lat_ms": 2.9175,
+    "mint_avg_lat_ms": 8.4114,
+    "speedup": 0.347,
+    "percol_avg_recall": 0.3438,
+    "mint_avg_recall": 0.9666
+  }
+}
